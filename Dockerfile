@@ -4,11 +4,12 @@
 # FEEL FREE TO REPLACE OR REMOVE THIS HEADER.
 FROM node:13.10.1-alpine as base
 RUN apk update
+# IF UID or GUID is already taken
 RUN apk --no-cache add shadow && \
     usermod -u 2000 node && \
-    groupmod -g 2000 node && \
-    find / -group 1000 -exec chgrp -h node {} && \
-    find / -user 1000 -exec chown -h node {}
+    groupmod -g 2000 node
+RUN find / -group 1000 -exec chgrp -h 2000 {} \;
+RUN find / -user 1000 -exec chown -h 2000 {} \;
 
 FROM scratch as user
 COPY --from=base . .

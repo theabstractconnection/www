@@ -1,4 +1,4 @@
-# www
+# WWW
 
 ## Project setup
 ```
@@ -20,5 +20,10 @@ npm run build
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# DOCKER-COMPOSE SETUP  
+
+## BUILD CONTAINERS
+`make build`  
+
+## START SERVICES
+`make service`  

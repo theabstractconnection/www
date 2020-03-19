@@ -4,6 +4,9 @@
 # FEEL FREE TO REPLACE OR REMOVE THIS HEADER.
 FROM node:13.10.1-alpine as base
 RUN apk update
+
+RUN yarn global add http-server
+
 # IF UID or GUID is already taken
 RUN apk --no-cache add shadow && \
     usermod -u 2000 node && \
@@ -22,7 +25,6 @@ RUN [ "${HOST_USER}" == "root" ] || \
 USER ${HOST_USER}
 WORKDIR /home/${HOST_USER}
 
-RUN npm install -g http-server
 COPY package*.json ./
 RUN yarn
 COPY . .

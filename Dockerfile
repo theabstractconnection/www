@@ -22,7 +22,7 @@ RUN [ "${HOST_USER}" == "root" ] || \
 USER ${HOST_USER}
 WORKDIR /home/${HOST_USER}
 
-RUN yarn global add http-server
+RUN npm install -g http-server
 COPY package*.json ./
 RUN yarn
 COPY . .

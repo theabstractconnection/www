@@ -116,7 +116,7 @@ pullimages:
 	$(foreach element,$(SERVICE_LIST_WITH_IMAGE),$(shell export PROJECT_NAME=$(PROJECT_NAME) export HOST_USER=$(HOST_USER) export HOST_UID=$(HOST_UID) && docker-compose pull $(element)))	
 
 build:
-	# ☠☠☠ BUILD CONTAINER & DEPENDECES CONTAINERS
+	# ☠☠☠ BUILD CONTAINER & DEPS CONTAINERS
 	docker-compose build $(SERVICE_TARGET)
 
 clean:

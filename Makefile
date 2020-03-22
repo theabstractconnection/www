@@ -6,6 +6,8 @@
 # MIT license. See the LICENSE file for details.
 # --------------------------------------------------------------------
 
+SHELL := /bin/bash
+
 # If you see pwd_unknown showing up, this is why. Re-calibrate your system.
 PWD ?= pwd_unknown
 
@@ -42,6 +44,11 @@ endif
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 CMD_ARGUMENTS ?= $(cmd)
 
+# source Makefile_scripts.sh 
+# extract services_name from docker-compose.yml and assign it to SERVICES_ARRAY
+SERVICE_LIST := $(shell source $(PWD)/Makefile_scripts.sh && dc_get_services_names docker-compose.yml)
+SERVICE_LIST_WITH_IMAGE := $(shell source $(PWD)/Makefile_scripts.sh && dc_get_services_names_with_images docker-compose.yml)
+
 # export such that its passed to shell functions for Docker to pick up.
 export PROJECT_NAME
 export HOST_USER
@@ -61,10 +68,10 @@ export HOST_UID
 # i.e. works on most cases. For everything else perhaps more useful to upload a script and execute that.
 shell:
 ifeq ($(CMD_ARGUMENTS),)
-	# no command is given, default to shell
+	# ☠☠☠ NO COMMAND GIVEN DEFAULT TO SHELL
 	docker-compose -p $(PROJECT_NAME)_$(HOST_UID) run --rm $(SERVICE_TARGET) sh
 else
-	# run the command
+	# ☠☠☠ RUN THE COMMAND
 	docker-compose -p $(PROJECT_NAME)_$(HOST_UID) run --rm $(SERVICE_TARGET) sh -c "$(CMD_ARGUMENTS)"
 endif
 
@@ -89,37 +96,45 @@ help:
 	@echo 'uid=:	make shell user=dummy uid=4000 (defaults to 0 if user= set)'
 
 rebuild:
-	# force a rebuild by passing --no-cache
+	# ☠☠☠ FORCE REBUILD
 	docker-compose build --no-cache $(SERVICE_TARGET)
 
 service:
-	# run as a (background) service
+	# ☠☠☠ RUN AS A BACKGROUND SERVICE
 	docker-compose -p $(PROJECT_NAME)_$(HOST_UID) up -d $(SERVICE_TARGET)
 
 unservice:
-	# stop the (background) service
+	# ☠☠☠ STOP THE BACKGROUND SERVICE
 	docker-compose -p $(PROJECT_NAME)_$(HOST_UID) down
 
 login: service
-	# run as a service and attach to it
+	# ☠☠☠ RUN AS SERVICE & ATTACH TO IT
 	docker exec -it $(PROJECT_NAME)_$(HOST_UID) sh
 
+pullimages: 
+	# ☠☠☠ PULL ALL NEEDED IMAGES
+	$(foreach element,$(SERVICE_LIST_WITH_IMAGE),$(shell export PROJECT_NAME=$(PROJECT_NAME) export HOST_USER=$(HOST_USER) export HOST_UID=$(HOST_UID) && docker-compose pull $(element)))	
+
 build:
-	# only build the container. Note, docker does this also if you apply other targets.
+	# ☠☠☠ BUILD CONTAINER & DEPENDECES CONTAINERS
 	docker-compose build $(SERVICE_TARGET)
 
 clean:
-	# remove created images
+	# ☠☠☠ REMOVE CREATED IMAGES
 	@docker-compose -p $(PROJECT_NAME)_$(HOST_UID) down --remove-orphans --rmi all 2>/dev/null \
 	&& echo 'Image(s) for "$(PROJECT_NAME):$(HOST_USER)" removed.' \
 	|| echo 'Image(s) for "$(PROJECT_NAME):$(HOST_USER)" already removed.'
 
 prune:
-	# clean all that is not actively used
+	# ☠☠☠ CLEAN ALL THAT IS NOT ACTIVELY USED
 	docker system prune -af
 
 test:
-	# here it is useful to add your own customised tests
+	# ☠☠☠ RUN TESTS (ADD YOUR OWN TEST)
 	docker-compose -p $(PROJECT_NAME)_$(HOST_UID) run --rm $(SERVICE_TARGET) sh -c '\
 		echo "I am `whoami`. My uid is `id -u`." && echo "Docker runs!"' \
 	&& echo success
+
+postinstall:
+	# ☠☠☠ RUN POST-INSTALL SCRIPT
+	./post-install.sh

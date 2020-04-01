@@ -4,6 +4,7 @@
 # FEEL FREE TO REPLACE OR REMOVE THIS HEADER.
 FROM node:13.10.1-alpine as base
 RUN apk update
+ARG USELESS=${USELESS:-4000}
 
 RUN yarn global add http-server
 
